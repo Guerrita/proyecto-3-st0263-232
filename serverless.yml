@@ -5,9 +5,7 @@ provider:
   name: aws
   runtime: python3.9
   environment:
-    kinesisStream: !Ref WeatherKinesisStream
-    projectBucket: !Ref ProjectBucket
-    weather: key
+    weather: 871177f1336e522bc97321a0cc5c38c6
   iam:
     role:
         statements:
@@ -16,12 +14,6 @@ provider:
               - kinesis:PutRecord
             Resource:
               - !Sub "arn:aws:kinesis:${AWS::Region}:${AWS::AccountId}:stream/${WeatherKinesisStream}"
-          - Effect: "Allow"
-            Action:
-              - s3:GetObject
-              - s3:ListBucket
-              - s3:ListObjectsV2
-            Resource: { "Fn::Join" : ["", ["arn:aws:s3:::", { "Ref" : "ProjectBucket" }, "/*" ] ]  }
           - Effect: "Allow"
             Action:
               - s3:GetObject
@@ -51,9 +43,5 @@ resources:
       Properties:
         Name: weatherKinesisStream
         ShardCount: 1
-    ProjectBucket:
-      Type: AWS::S3::Bucket
-      Properties:
-        BucketName: proyecto-3-data-bucket
 plugins:
   - serverless-python-requirements

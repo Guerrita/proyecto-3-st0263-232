@@ -26,7 +26,7 @@ def get_data(event, context):
     try:
         response = requests.get(api_url)
         data = response.json()
-        # print(data)
+        print(data)
         # Configura el productor de Kinesis
 
         # Envia cada registro al flujo de Kinesis
