@@ -6,7 +6,8 @@ provider:
   runtime: python3.9
   environment:
     kinesisStream: !Ref WeatherKinesisStream
-    # kinesisStreamName: ${self:WeatherKinesisStream.kinesisStreamName}
+    projectBucket: !Ref ProjectBucket
+    weather: key
   iam:
     role:
         statements:
@@ -15,6 +16,18 @@ provider:
               - kinesis:PutRecord
             Resource:
               - !Sub "arn:aws:kinesis:${AWS::Region}:${AWS::AccountId}:stream/${WeatherKinesisStream}"
+          - Effect: "Allow"
+            Action:
+              - s3:GetObject
+              - s3:ListBucket
+              - s3:ListObjectsV2
+            Resource: { "Fn::Join" : ["", ["arn:aws:s3:::", { "Ref" : "ProjectBucket" }, "/*" ] ]  }
+          - Effect: "Allow"
+            Action:
+              - s3:GetObject
+              - s3:ListBucket
+              - s3:ListObjectsV2
+            Resource: arn:aws:s3:::proyecto-3/*
 
 functions:
   get_data:
@@ -23,6 +36,7 @@ functions:
       - httpApi:
           path: /get-data
           method: get
+      - schedule: cron(30 23 * * ? *)
   analyze_sentiments:
     handler: src/analyze_sentiments.analyze_sentiments
     events:
@@ -37,3 +51,9 @@ resources:
       Properties:
         Name: weatherKinesisStream
         ShardCount: 1
+    ProjectBucket:
+      Type: AWS::S3::Bucket
+      Properties:
+        BucketName: proyecto-3-data-bucket
+plugins:
+  - serverless-python-requirements

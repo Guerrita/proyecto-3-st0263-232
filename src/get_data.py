@@ -1,21 +1,24 @@
 import os
 import requests
 import json
-from dotenv import load_dotenv
+from datetime import datetime
 import boto3
 
-load_dotenv()
+# load_dotenv()
 kinesis_stream = 'weatherKinesisStream'
+openweather_api_key = os.environ['weather']
 
 def get_data(event, context):
     # Configura las variables de entorno
-    openweather_api_key = os.getenv('OPENWEATHER_API_KEY')
-    kinesis_stream_name = os.getenv('KINESIS_STREAM_NAME')
+    # openweather_api_key = os.getenv('OPENWEATHER_API_KEY')
+    # kinesis_stream_name = os.getenv('KINESIS_STREAM_NAME')
     kinesis = boto3.client('kinesis')
     latitude = '6.25'
     longitude = '-75.56'
     exclude = 'minutely'  # Puedes ajustar las partes a excluir según tus necesidades
-    date = '2023-11-16'
+    date = datetime.now().strftime('%Y-%m-%d')
+
+    # date = '2023-11-26'
     # Realiza la llamada a la API de OpenWeather One Call 3.0
     # api_url = f'https://api.openweathermap.org/data/3.0/onecall?lat={latitude}&lon={longitude}&exclude={exclude}&appid={openweather_api_key}'
     api_url = f'https://api.openweathermap.org/data/3.0/onecall?lat={latitude}&lon={longitude}&date={date}&appid={openweather_api_key}'
